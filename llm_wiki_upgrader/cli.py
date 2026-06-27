@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .upgrader import build_checklist, upgrade_note
+from .upgrader import build_checklist, build_publish_review, upgrade_note
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -16,6 +16,10 @@ def main(argv: list[str] | None = None) -> int:
     checklist = subparsers.add_parser("checklist", help="Generate a publication checklist.")
     checklist.add_argument("path", type=Path)
 
+    publish_review = subparsers.add_parser("publish-review", help="Review wiki publication readiness.")
+    publish_review.add_argument("path", type=Path)
+    publish_review.add_argument("--format", choices=["markdown", "json"], default="markdown")
+
     args = parser.parse_args(argv)
 
     if args.command == "upgrade":
@@ -24,6 +28,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "checklist":
         print(build_checklist(args.path))
+        return 0
+
+    if args.command == "publish-review":
+        print(build_publish_review(args.path, args.format))
         return 0
 
     parser.error(f"Unknown command: {args.command}")

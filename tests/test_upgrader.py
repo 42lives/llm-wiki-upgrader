@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from llm_wiki_upgrader.upgrader import build_checklist, upgrade_note
+from llm_wiki_upgrader.upgrader import build_checklist, build_publish_review, upgrade_note
 
 
 class WikiUpgraderTest(unittest.TestCase):
@@ -16,6 +16,15 @@ class WikiUpgraderTest(unittest.TestCase):
         checklist = build_checklist(Path("examples/raw-note.md"))
 
         self.assertIn("Privacy review", checklist)
+
+    def test_publish_review_outputs_status_and_checklist(self) -> None:
+        markdown = build_publish_review(Path("examples/raw-note.md"))
+        json_output = build_publish_review(Path("examples/raw-note.md"), "json")
+
+        self.assertIn("# Wiki Publication Review", markdown)
+        self.assertIn("Status:", markdown)
+        self.assertIn("Checklist", markdown)
+        self.assertIn('"privacy_boundary"', json_output)
 
 
 if __name__ == "__main__":
