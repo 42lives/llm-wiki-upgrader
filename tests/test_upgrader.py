@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from llm_wiki_upgrader.upgrader import build_checklist, build_publish_review, upgrade_note
+from llm_wiki_upgrader.upgrader import batch_upgrade, build_checklist, build_publish_review, upgrade_note
 
 
 class WikiUpgraderTest(unittest.TestCase):
@@ -25,6 +25,12 @@ class WikiUpgraderTest(unittest.TestCase):
         self.assertIn("Status:", markdown)
         self.assertIn("Checklist", markdown)
         self.assertIn('"privacy_boundary"', json_output)
+
+    def test_batch_upgrade_combines_markdown_notes(self) -> None:
+        batch = batch_upgrade(Path("examples"))
+
+        self.assertIn("# Batch Wiki Upgrade", batch)
+        self.assertIn("raw-note.md", batch)
 
 
 if __name__ == "__main__":

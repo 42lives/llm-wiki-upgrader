@@ -17,6 +17,7 @@ This project is for working professionals and AI-assisted builders who collect u
 
 ```bash
 python3 -m llm_wiki_upgrader upgrade examples/raw-note.md
+python3 -m llm_wiki_upgrader batch-upgrade examples
 python3 -m llm_wiki_upgrader checklist examples/raw-note.md
 python3 -m llm_wiki_upgrader publish-review examples/raw-note.md --format markdown
 python3 -m llm_wiki_upgrader publish-review examples/raw-note.md --format json

@@ -95,6 +95,18 @@ def build_publish_review(path: Path, output_format: str = "markdown") -> str:
     return render_publish_review_markdown(report)
 
 
+def batch_upgrade(path: Path) -> str:
+    root = path.expanduser().resolve()
+    files = sorted(root.glob("*.md")) if root.is_dir() else [root]
+    lines = ["# Batch Wiki Upgrade", "", f"Source: `{root}`", "", f"Files: {len(files)}", ""]
+    for file_path in files:
+        upgraded = upgrade_note(file_path)
+        lines.extend([f"## {file_path.name}", "", upgraded.rstrip(), ""])
+    if not files:
+        lines.append("No Markdown files found.")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def review_publication_readiness(text: str) -> list[dict[str, str]]:
     findings: list[dict[str, str]] = []
     lower = text.lower()
