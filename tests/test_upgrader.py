@@ -1,7 +1,13 @@
 import unittest
 from pathlib import Path
 
-from llm_wiki_upgrader.upgrader import batch_upgrade, build_checklist, build_publish_review, upgrade_note
+from llm_wiki_upgrader.upgrader import (
+    batch_upgrade,
+    build_checklist,
+    build_citation_check,
+    build_publish_review,
+    upgrade_note,
+)
 
 
 class WikiUpgraderTest(unittest.TestCase):
@@ -31,6 +37,20 @@ class WikiUpgraderTest(unittest.TestCase):
 
         self.assertIn("# Batch Wiki Upgrade", batch)
         self.assertIn("raw-note.md", batch)
+
+    def test_citation_check_accepts_source_citation_example(self) -> None:
+        markdown = build_citation_check(Path("examples/source-citation-note.md"))
+        json_output = build_citation_check(Path("examples/source-citation-note.md"), "json")
+
+        self.assertIn("# Source Citation Check", markdown)
+        self.assertIn("Status: ready", markdown)
+        self.assertIn('"status": "ready"', json_output)
+
+    def test_citation_check_flags_missing_source_notes(self) -> None:
+        markdown = build_citation_check(Path("examples/raw-note.md"))
+
+        self.assertIn("Status: needs review", markdown)
+        self.assertIn("Missing Source Notes", markdown)
 
 
 if __name__ == "__main__":

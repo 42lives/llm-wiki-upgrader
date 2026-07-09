@@ -95,6 +95,38 @@ def build_publish_review(path: Path, output_format: str = "markdown") -> str:
     return render_publish_review_markdown(report)
 
 
+def build_citation_check(path: Path, output_format: str = "markdown") -> str:
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    lower = text.lower()
+    findings = []
+    if "## source notes" not in lower:
+        findings.append({"severity": "medium", "message": "Missing Source Notes section"})
+    if "source" not in lower and "http" not in lower:
+        findings.append({"severity": "medium", "message": "No visible source labels or links"})
+    if "assumption" not in lower and "assume" not in lower:
+        findings.append({"severity": "low", "message": "No assumption boundary found"})
+    if "private" not in lower and "privacy" not in lower:
+        findings.append({"severity": "low", "message": "No privacy review reminder found"})
+
+    report = {
+        "summary": {
+            "status": "ready" if not findings else "needs review",
+            "findings": len(findings),
+        },
+        "path": str(path.expanduser().resolve()),
+        "findings": findings,
+        "checklist": [
+            "Keep source labels separate from generated summary text.",
+            "Mark assumptions instead of presenting them as verified facts.",
+            "Paraphrase copyrighted material unless reuse is explicitly allowed.",
+            "Remove private account, customer, email, and workflow details before publishing.",
+        ],
+    }
+    if output_format == "json":
+        return json.dumps(report, indent=2, ensure_ascii=False) + "\n"
+    return render_citation_check_markdown(report)
+
+
 def batch_upgrade(path: Path) -> str:
     root = path.expanduser().resolve()
     files = sorted(root.glob("*.md")) if root.is_dir() else [root]
@@ -104,6 +136,29 @@ def batch_upgrade(path: Path) -> str:
         lines.extend([f"## {file_path.name}", "", upgraded.rstrip(), ""])
     if not files:
         lines.append("No Markdown files found.")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def render_citation_check_markdown(report: dict[str, object]) -> str:
+    summary = report["summary"]
+    lines = [
+        "# Source Citation Check",
+        "",
+        f"Status: {summary['status']}",
+        f"Findings: {summary['findings']}",
+        f"Path: `{report['path']}`",
+        "",
+        "## Findings",
+        "",
+    ]
+    findings = report["findings"]
+    if not findings:
+        lines.append("No citation readiness findings.")
+    for finding in findings:
+        lines.append(f"- [{finding['severity']}] {finding['message']}")
+    lines.extend(["", "## Checklist", ""])
+    for item in report["checklist"]:
+        lines.append(f"- [ ] {item}")
     return "\n".join(lines).rstrip() + "\n"
 
 

@@ -11,6 +11,7 @@ This project is for working professionals and AI-assisted builders who collect u
 - Extract action items into a maintainer checklist
 - Detect missing source notes and weak review language
 - Review publication readiness with Markdown or JSON output
+- Check source labels, assumptions, and privacy reminders before publishing
 - Run locally with no network calls or external dependencies
 
 ## Usage
@@ -21,6 +22,7 @@ python3 -m llm_wiki_upgrader batch-upgrade examples
 python3 -m llm_wiki_upgrader checklist examples/raw-note.md
 python3 -m llm_wiki_upgrader publish-review examples/raw-note.md --format markdown
 python3 -m llm_wiki_upgrader publish-review examples/raw-note.md --format json
+python3 -m llm_wiki_upgrader citation-check examples/source-citation-note.md
 ```
 
 ## Wiki Style
@@ -61,6 +63,17 @@ LLM Wiki Upgrader helps turn draft AI notes into something a maintainer can revi
 - reusable publication checklist.
 
 The command runs locally and does not upload note content.
+
+## Source Citation Example
+
+`examples/source-citation-note.md` shows a safer publication pattern:
+
+- keep source labels in `Source Notes`,
+- mark assumptions separately,
+- paraphrase source material instead of copying it,
+- keep privacy reminders visible before public sharing.
+
+Run `citation-check` before publishing a wiki page that came from rough LLM notes.
 
 ## License
 

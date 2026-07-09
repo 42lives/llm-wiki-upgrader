@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .upgrader import batch_upgrade, build_checklist, build_publish_review, upgrade_note
+from .upgrader import batch_upgrade, build_checklist, build_citation_check, build_publish_review, upgrade_note
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -20,6 +20,10 @@ def main(argv: list[str] | None = None) -> int:
     publish_review.add_argument("path", type=Path)
     publish_review.add_argument("--format", choices=["markdown", "json"], default="markdown")
 
+    citation_check = subparsers.add_parser("citation-check", help="Check source and assumption boundaries.")
+    citation_check.add_argument("path", type=Path)
+    citation_check.add_argument("--format", choices=["markdown", "json"], default="markdown")
+
     batch = subparsers.add_parser("batch-upgrade", help="Upgrade all Markdown notes in a folder.")
     batch.add_argument("path", type=Path)
 
@@ -35,6 +39,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "publish-review":
         print(build_publish_review(args.path, args.format))
+        return 0
+
+    if args.command == "citation-check":
+        print(build_citation_check(args.path, args.format))
         return 0
 
     if args.command == "batch-upgrade":
